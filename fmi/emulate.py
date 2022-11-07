@@ -11,7 +11,6 @@ def FMI_simple_simulation(fmu):
 
 
 def FMI_complex_simulation(filename,
-
                            start_time: Union[float, str] = None,
                            stop_time: Union[float, str] = None,
                            step_size: Union[float, str] = None,
