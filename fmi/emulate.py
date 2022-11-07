@@ -21,7 +21,7 @@ def FMI_complex_simulation(filename,
                            output_interval: Union[float, str] = None,
                            model_description: ModelDescription = None,
                            fmu_instance: _FMU = None,
-                           start_values: Dict[str, Any] = {},
+                           start_values: Dict[str, Any] = dict(),
                            ):
 
     return simulate_fmu(filename=filename,

@@ -1,6 +1,5 @@
 from fmi.attribute import *
 from fmi.emulate import *
-
 if __name__ == '__main__':
     fmu = "resources/Rectifier.fmu"
     info = FMI_version_and_type(fmu)
@@ -24,15 +23,15 @@ if __name__ == '__main__':
     # 设置初始值
     start_time = 0.0
     stop_time = 0.1
-    step_size = 1e-3
-    output_interval = 2e-2
+    step_size = 1e-6
+    # output_interval = 2e-2
     kwargs = {
         'filename': fmu,
         'start_time': start_time,
         'stop_time': stop_time,
         'fmi_type': info,
         'step_size': step_size,
-        'output_interval': output_interval,
+        # 'output_interval': output_interval,
     }
     # 仿真步骤
     result = FMI_complex_simulation(**kwargs)
