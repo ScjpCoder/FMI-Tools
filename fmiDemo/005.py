@@ -2,21 +2,21 @@ from fmi.attribute import *
 from fmi.emulate import *
 
 
-def simulation(filename):
-    info = FMI_version_and_type(fmu)
+def simulation_005(filename):
+    info = FMI_version_and_type(filename)
     print(info)
-    platform = FMI_platform(fmu)
+    platform = FMI_platform(filename)
     print(platform)
 
-    FMI_attribute(fmu)
+    FMI_attribute(filename)
 
-    desc = FMI_model_description(fmu)
+    desc = FMI_model_description(filename)
     print(desc)
     # 初始值
-    value = FMI_start_values(fmu)
+    value = FMI_start_values(filename)
     print(value)
 
-    result = FMI_simple_simulation(fmu)
+    result = FMI_simple_simulation(filename)
     print(result)
 
     FMI_polt_result(result)
@@ -27,7 +27,7 @@ def simulation(filename):
     step_size = 1e-2
     # output_interval = 2e-2
     kwargs = {
-        'filename': fmu,
+        'filename': filename,
         'start_time': start_time,
         'stop_time': stop_time,
         'fmi_type': info,
@@ -43,4 +43,4 @@ def simulation(filename):
 
 if __name__ == '__main__':
     fmu = "D:/workspace/FMIDemo/fmiResources/Rectifier.fmu"
-    simulation(fmu)
+    simulation_005(fmu)
