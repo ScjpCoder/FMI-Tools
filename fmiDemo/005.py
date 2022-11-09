@@ -1,7 +1,8 @@
 from fmi.attribute import *
 from fmi.emulate import *
 if __name__ == '__main__':
-    fmu = "D:/workspace/FMIDemo/resources/Rectifier.fmu"
+    fmu = "D:/workspace/FMIDemo/fmiResources/Rectifier.fmu"
+
     info = FMI_version_and_type(fmu)
     platform = FMI_platform(fmu)
     print(platform)

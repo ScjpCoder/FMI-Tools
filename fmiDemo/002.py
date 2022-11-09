@@ -7,7 +7,7 @@ from fmi.instance import FMI_unzip
 
 
 def run_VanDerPol():
-    filename = 'D:/workspace/FMIDemo/resources/VanDerPol.fmu'
+    filename = 'D:/workspace/FMIDemo/fmiResources/VanDerPol.fmu'
     unzip = FMI_unzip(filename)
     md = FMI_model_description(unzip)
     fmu_instance = instantiate_fmu(unzipdir=unzip, model_description=md, fmi_type='ModelExchange')
