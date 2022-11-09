@@ -1,6 +1,5 @@
-from fmpy import fmi_info, supported_platforms, read_model_description, dump
+from fmpy import fmi_info, supported_platforms, dump, read_model_description
 from fmpy.util import get_start_values, can_simulate
-from fmpy.examples.custom_input import *
 
 
 def FMI_version_and_type(fmu):
