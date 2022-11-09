@@ -1,31 +1,18 @@
 import shutil
 
-from fmpy import *
+from fmi.emulate import FMI_complex_simulation
+from fmi.instance import FMI_Cs_instance
 
 
 def run_VanDerPol():
-    filename = 'D:/workspace/FMIDemo/resources/CoupledClutches.fmu'
-
-    unzip = extract(filename)
-
-    # read the model description
-    md = read_model_description(unzip)
-
-    # instantiate the FMU
-    fmu_instance = instantiate_fmu(unzipdir=unzip, model_description=md)
-
-    # reset the FMU instance instead of creating a new one
+    filename = 'D:/workspace/FMIDemo/resources/BouncingBall.fmu'
+    unzip, md, fmu_instance = FMI_Cs_instance(filename)
     fmu_instance.reset()
-
-    result = simulate_fmu(unzip,
-                          model_description=md,
-                          fmu_instance=fmu_instance)
-    plot_result(result)
-
-    # free the FMU instance and unload the shared library
+    result = FMI_complex_simulation(filename=unzip,
+                                    model_description=md,
+                                    fmu_instance=fmu_instance)
+    print(result)
     fmu_instance.freeInstance()
-
-    # delete the temporary directory
     shutil.rmtree(unzip, ignore_errors=True)
     exit(0)
 

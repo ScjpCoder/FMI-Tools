@@ -1,41 +1,69 @@
-
 import shutil
+import numpy as np
+from fmpy.fmi2 import FMU2Slave
+from fmi.emulate import FMI_polt_result
 
-from fmpy import *
+from fmi.attribute import FMI_model_description
+from fmi.instance import FMI_unzip
 
 
-def run_VanDerPol():
+def simulate_custom_input(show_plot=True):
 
-    filename = 'D:/workspace/FMIDemo/resources/Rectifier.fmu'
+    fmu_filename = 'D:/workspace/FMIDemo/resources/CoupledClutches.fmu'
+    start_time = 0.0
+    threshold = 2.0
+    stop_time = 2.0
+    step_size = 1e-3
 
-    unzip = extract(filename)
+    model_description = FMI_model_description(fmu_filename)
 
-    # read the model description
-    md = read_model_description(unzip)
+    vrs = {}
+    for variable in model_description.modelVariables:
+        vrs[variable.name] = variable.valueReference
 
-    # instantiate the FMU
-    fmu_instance = instantiate_fmu(unzipdir=unzip, model_description= md)
+    vr_inputs = vrs['inputs']
+    vr_outputs4 = vrs['outputs[4]']
 
-    # perform the iteration
-    for i in range(10):
+    unzipdir = FMI_unzip(fmu_filename)
 
-        # reset the FMU instance instead of creating a new one
-        fmu_instance.reset()
+    fmu = FMU2Slave(guid=model_description.guid,
+                    unzipDirectory=unzipdir,
+                    modelIdentifier=model_description.coSimulation.modelIdentifier,
+                    instanceName='instance1')
 
-        # calculate the parameters for this run
-        start_values = {'mu': i * 0.01}
+    fmu.instantiate()
+    fmu.setupExperiment(startTime=start_time)
+    fmu.enterInitializationMode()
+    fmu.exitInitializationMode()
 
-        result = simulate_fmu(unzip,
-                              model_description=md,
-                              fmu_instance=fmu_instance)
-        print(result)
-    # free the FMU instance and unload the shared library
-    fmu_instance.freeInstance()
+    time = start_time
 
-    # delete the temporary directory
-    shutil.rmtree(unzip, ignore_errors=True)
-    exit(0)
+    rows = []
+
+    while time < stop_time:
+
+        fmu.setReal([vr_inputs], [0.0 if time < 0.9 else 1.0])
+
+        fmu.doStep(currentCommunicationPoint=time, communicationStepSize=step_size)
+
+        time += step_size
+
+        inputs, outputs4 = fmu.getReal([vr_inputs, vr_outputs4])
+
+        rows.append((time, inputs, outputs4))
+
+        if outputs4 > threshold:
+            print("Threshold reached at t = %g s" % time)
+            break
+
+    fmu.terminate()
+    fmu.freeInstance()
+    shutil.rmtree(unzipdir, ignore_errors=True)
+    result = np.array(rows, dtype=np.dtype([('time', np.float64), ('inputs', np.float64), ('outputs[4]', np.float64)]))
+    if show_plot:
+        FMI_polt_result(result)
+    return time
 
 
 if __name__ == '__main__':
-    run_VanDerPol()
+    simulate_custom_input()

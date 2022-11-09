@@ -7,7 +7,7 @@ def FMI_unzip(file):
     return extract(file)
 
 
-def FMI_instance(file):
+def FMI_Cs_instance(file):
     unzip = extract(file)
     md = FMI_model_description(file)
     instance = instantiate_fmu(unzipdir=unzip,

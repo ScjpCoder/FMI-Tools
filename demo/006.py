@@ -1,70 +1,40 @@
-import shutil
-
-import numpy as np
-from fmpy.fmi2 import FMU2Slave
-from fmi.emulate import FMI_polt_result
-
-from fmi.attribute import FMI_model_description
-from fmi.instance import FMI_unzip
-
-
-def simulate_custom_input(show_plot=True):
-
-    fmu_filename = 'D:/workspace/FMIDemo/resources/CoupledClutches.fmu'
-    start_time = 0.0
-    threshold = 2.0
-    stop_time = 2.0
-    step_size = 1e-3
-
-    model_description = FMI_model_description(fmu_filename)
-
-    vrs = {}
-    for variable in model_description.modelVariables:
-        vrs[variable.name] = variable.valueReference
-
-    vr_inputs = vrs['inputs']
-    vr_outputs4 = vrs['outputs[4]']
-
-    unzipdir = FMI_unzip(fmu_filename)
-
-    fmu = FMU2Slave(guid=model_description.guid,
-                    unzipDirectory=unzipdir,
-                    modelIdentifier=model_description.coSimulation.modelIdentifier,
-                    instanceName='instance1')
-
-    fmu.instantiate()
-    fmu.setupExperiment(startTime=start_time)
-    fmu.enterInitializationMode()
-    fmu.exitInitializationMode()
-
-    time = start_time
-
-    rows = []
-
-    while time < stop_time:
-
-        fmu.setReal([vr_inputs], [0.0 if time < 0.9 else 1.0])
-
-        fmu.doStep(currentCommunicationPoint=time, communicationStepSize=step_size)
-
-        time += step_size
-
-        inputs, outputs4 = fmu.getReal([vr_inputs, vr_outputs4])
-
-        rows.append((time, inputs, outputs4))
-
-        if outputs4 > threshold:
-            print("Threshold reached at t = %g s" % time)
-            break
-
-    fmu.terminate()
-    fmu.freeInstance()
-    shutil.rmtree(unzipdir, ignore_errors=True)
-    result = np.array(rows, dtype=np.dtype([('time', np.float64), ('inputs', np.float64), ('outputs[4]', np.float64)]))
-    if show_plot:
-        FMI_polt_result(result)
-    return time
-
-
+from fmi.attribute import *
+from fmi.emulate import *
 if __name__ == '__main__':
-    simulate_custom_input()
+    fmu = "D:/workspace/FMIDemo/resources/Rectifier.fmu"
+    info = FMI_version_and_type(fmu)
+    platform = FMI_platform(fmu)
+    print(platform)
+
+    FMI_attribute(fmu)
+
+    desc = FMI_model_description(fmu)
+    print(desc)
+    # 初始值
+    value = FMI_start_values(fmu)
+    print(value)
+
+    result = FMI_simple_simulation(fmu)
+    print(result)
+
+    FMI_polt_result(result)
+
+    # 设置初始值
+    start_time = 0.0
+    stop_time = 1.0
+    step_size = 1e-2
+    # output_interval = 2e-2
+    kwargs = {
+        'filename': fmu,
+        'start_time': start_time,
+        'stop_time': stop_time,
+        'fmi_type': info,
+        'step_size': step_size,
+        # 'output_interval': output_interval,
+    }
+    # 仿真步骤
+    result = FMI_complex_simulation(**kwargs)
+    FMI_csv_result("../target/RecResult.csv", result)
+
+    FMI_polt_result(result)
+    exit(0)

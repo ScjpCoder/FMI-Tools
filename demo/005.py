@@ -1,37 +1,59 @@
-""" This example demonstrates how to save CPU time by reusing the extracted FMU,
- loaded model description, and FMU instance when simulating the same FMU multiple times """
-
 import shutil
 
-from fmi.emulate import FMI_complex_simulation
-from fmi.instance import FMI_instance
+import numpy as np
+from fmpy.fmi2 import FMU2Slave
+from fmi.emulate import FMI_polt_result
+
+from fmi.attribute import FMI_model_description
+from fmi.instance import FMI_unzip
 
 
-def run_VanDerPol():
-    # download the FMU
-    filename = 'D:/workspace/FMIDemo/resources/BouncingBall.fmu'
-    # instantiate the FMU
-    unzip, md, fmu_instance = FMI_instance(filename)
+def simulate_custom_input(show_plot=True):
 
-    # perform the iteration
-    # for i in range(10):
-    # reset the FMU instance instead of creating a new one
-    fmu_instance.reset()
+    fmu_filename = 'D:/workspace/FMIDemo/resources/CoupledClutches.fmu'
+    start_time = 0.0
+    threshold = 2.0
+    stop_time = 2.0
+    step_size = 1e-3
+    model_description = FMI_model_description(fmu_filename)
 
-    # calculate the parameters for this run
+    vrs = {}
+    for variable in model_description.modelVariables:
+        vrs[variable.name] = variable.valueReference
+    vr_inputs = vrs['inputs']
+    vr_outputs4 = vrs['outputs[4]']
 
-    result = FMI_complex_simulation(filename=unzip,
-                                    model_description=md,
-                                    fmu_instance=fmu_instance)
-    print(result)
+    zipdir = FMI_unzip(fmu_filename)
 
-    # free the FMU instance and unload the shared library
-    fmu_instance.freeInstance()
-    # delete the temporary directory
-    shutil.rmtree(unzip, ignore_errors=True)
-    # system.exit
-    exit(0)
+    fmu = FMU2Slave(guid=model_description.guid,
+                    unzipDirectory=zipdir,
+                    modelIdentifier=model_description.coSimulation.modelIdentifier,
+                    instanceName='instance1')
+
+    fmu.instantiate()
+    fmu.setupExperiment(startTime=start_time)
+    fmu.enterInitializationMode()
+    fmu.exitInitializationMode()
+    time = start_time
+    rows = []
+
+    while time < stop_time:
+        fmu.setReal([vr_inputs], [0.0 if time < 0.9 else 1.0])
+        fmu.doStep(currentCommunicationPoint=time, communicationStepSize=step_size)
+        time += step_size
+        inputs, outputs4 = fmu.getReal([vr_inputs, vr_outputs4])
+        rows.append((time, inputs, outputs4))
+        if outputs4 > threshold:
+            print("Threshold reached at t = %g s" % time)
+            break
+    fmu.terminate()
+    fmu.freeInstance()
+    shutil.rmtree(zipdir, ignore_errors=True)
+    result = np.array(rows, dtype=np.dtype([('time', np.float64), ('inputs', np.float64), ('outputs[4]', np.float64)]))
+    if show_plot:
+        FMI_polt_result(result)
+    return time
 
 
 if __name__ == '__main__':
-    run_VanDerPol()
+    simulate_custom_input()
