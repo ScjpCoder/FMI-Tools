@@ -24,10 +24,10 @@ def simulate_custom_input(show_plot=True):
     vr_inputs = vrs['inputs']
     vr_outputs4 = vrs['outputs[4]']
 
-    unzipdir = FMI_unzip(fmu_filename)
+    unzip = FMI_unzip(fmu_filename)
 
     fmu = FMU2Slave(guid=model_description.guid,
-                    unzipDirectory=unzipdir,
+                    unzipDirectory=unzip,
                     modelIdentifier=model_description.coSimulation.modelIdentifier,
                     instanceName='instance1')
 
@@ -58,7 +58,7 @@ def simulate_custom_input(show_plot=True):
 
     fmu.terminate()
     fmu.freeInstance()
-    shutil.rmtree(unzipdir, ignore_errors=True)
+    shutil.rmtree(unzip, ignore_errors=True)
     result = np.array(rows, dtype=np.dtype([('time', np.float64), ('inputs', np.float64), ('outputs[4]', np.float64)]))
     if show_plot:
         FMI_polt_result(result)

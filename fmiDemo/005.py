@@ -1,9 +1,10 @@
 from fmi.attribute import *
 from fmi.emulate import *
-if __name__ == '__main__':
-    fmu = "D:/workspace/FMIDemo/fmiResources/Rectifier.fmu"
 
+
+def simulation(filename):
     info = FMI_version_and_type(fmu)
+    print(info)
     platform = FMI_platform(fmu)
     print(platform)
 
@@ -36,6 +37,10 @@ if __name__ == '__main__':
     # 仿真步骤
     result = FMI_complex_simulation(**kwargs)
     FMI_csv_result("../target/RecResult.csv", result)
-
     FMI_polt_result(result)
     exit(0)
+
+
+if __name__ == '__main__':
+    fmu = "D:/workspace/FMIDemo/fmiResources/Rectifier.fmu"
+    simulation(fmu)
