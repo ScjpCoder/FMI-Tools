@@ -16,9 +16,9 @@ def FMI_platform(fmu):
 
 
 def FMI_can_simulation(platforms):
-    can = can_simulate(platforms)
-    print(can)
-    return can
+    can_simu = can_simulate(platforms)
+    print(can_simu)
+    return can_simu
 
 
 def FMI_attribute(path):
