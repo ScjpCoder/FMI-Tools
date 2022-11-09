@@ -18,6 +18,7 @@ def FMI_platform(fmu):
 def FMI_can_simulation(platforms):
     can = can_simulate(platforms)
     print(can)
+    return can
 
 
 def FMI_attribute(path):
@@ -38,6 +39,7 @@ def FMI_model_variables(fmu):
     description = read_model_description(fmu)
     for val in description.modelVariables:
         print(val)
+    return description
 
 
 def FMI_model_description(fmu):
@@ -61,7 +63,8 @@ if __name__ == '__main__':
     fmuPath = "D:/workspace/FMIDemo/resources/CoupledClutches.fmu"
     FMI_version_and_type(fmuPath)
     platform = FMI_platform(fmuPath)
-    FMI_can_simulation(platform)
+    can = FMI_can_simulation(platform)
+    print(can)
     FMI_default_experiment(fmuPath)
     FMI_start_values(fmuPath)
     FMI_core_description(fmuPath)

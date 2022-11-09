@@ -3,11 +3,11 @@ import numpy as np
 from fmpy.fmi2 import FMU2Slave
 from fmi.emulate import FMI_polt_result
 
-from fmi.attribute import FMI_model_description
+from fmi.attribute import FMI_model_description, FMI_model_variables
 from fmi.instance import FMI_unzip
 
 
-def simulate_custom_input(show_plot=True):
+def simulate_004(show_plot=True):
 
     fmu_filename = 'D:/workspace/FMIDemo/fmiResources/CoupledClutches.fmu'
     start_time = 0.0
@@ -16,7 +16,6 @@ def simulate_custom_input(show_plot=True):
     step_size = 1e-3
 
     model_description = FMI_model_description(fmu_filename)
-
     vrs = {}
     for variable in model_description.modelVariables:
         vrs[variable.name] = variable.valueReference
@@ -25,7 +24,6 @@ def simulate_custom_input(show_plot=True):
     vr_outputs4 = vrs['outputs[4]']
 
     unzip = FMI_unzip(fmu_filename)
-
     fmu = FMU2Slave(guid=model_description.guid,
                     unzipDirectory=unzip,
                     modelIdentifier=model_description.coSimulation.modelIdentifier,
@@ -43,15 +41,10 @@ def simulate_custom_input(show_plot=True):
     while time < stop_time:
 
         fmu.setReal([vr_inputs], [0.0 if time < 0.9 else 1.0])
-
         fmu.doStep(currentCommunicationPoint=time, communicationStepSize=step_size)
-
         time += step_size
-
         inputs, outputs4 = fmu.getReal([vr_inputs, vr_outputs4])
-
         rows.append((time, inputs, outputs4))
-
         if outputs4 > threshold:
             print("Threshold reached at t = %g s" % time)
             break
@@ -66,4 +59,4 @@ def simulate_custom_input(show_plot=True):
 
 
 if __name__ == '__main__':
-    simulate_custom_input()
+    simulate_004()
