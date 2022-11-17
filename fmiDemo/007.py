@@ -1,6 +1,7 @@
+from fmpy import simulate_fmu
+
 from fmi.attribute import *
-from fmi.emulate import FMI_polt_result, FMI_complex_simulation, FMI_csv_result
-import os
+from fmi.emulate import FMI_polt_result, FMI_complex_simulation, FMI_simple_simulation, FMI_csv_result
 
 
 def simulation(filename):
@@ -17,6 +18,9 @@ def simulation(filename):
     value = FMI_start_values(filename)
     print(value)
 
+    # result = FMI_simple_simulation(filename)
+    # FMI_polt_result(result)
+    # print(result)
     # 设置初始值
     start_time = 0.0
     stop_time = 1.0
@@ -30,19 +34,11 @@ def simulation(filename):
     }
     # # 仿真步骤
     result = FMI_complex_simulation(**kwargs)
-    FMI_csv_result("result.csv", result)
+    FMI_csv_result("../target/tiaozhijietiao.csv", result)
     FMI_polt_result(result)
+    exit(0)
 
 
 if __name__ == '__main__':
-    absPath = os.path.abspath(__file__).split('main')
-    path = absPath[0] + "\\fmiResources"
-    listdir = os.listdir(path)
-    print(listdir)
-    for i in listdir:
-        print(str(listdir.index(i)+1) +"."+i)
-    num = input("请选择要运行的模型:\n")
-    index = listdir.__getitem__(int(num)-1)
-    print(index)
-    fmu = path+"\\"+index
+    fmu = "D:/workspace/FMIDemo/fmiResources/tiaozhijietiao.fmu"
     simulation(fmu)

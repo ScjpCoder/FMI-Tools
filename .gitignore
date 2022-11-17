@@ -1,3 +1,5 @@
 venv/
 target/
 .idea/
+/build/
+/dist/
