@@ -4,7 +4,7 @@ from fmi.instance import FMI_Cs_instance
 
 
 def run_VanDerPol():
-    filename = 'D:/workspace/FMIDemo/fmiResources/VanDerPol.fmu'
+    filename = 'D:/workspace/FMIDemo/resources/VanDerPol.fmu'
     unzip, md, fmu_instance = FMI_Cs_instance(filename)
     fmu_instance.reset()
     start_values = {'mu': 1 * 0.01}

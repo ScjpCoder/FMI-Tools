@@ -38,5 +38,5 @@ def simulation(filename):
 
 
 if __name__ == '__main__':
-    fmu = "D:/workspace/FMIDemo/fmiResources/tiaozhijietiao.fmu"
+    fmu = "D:/workspace/FMIDemo/resources/tiaozhijietiao.fmu"
     simulation(fmu)

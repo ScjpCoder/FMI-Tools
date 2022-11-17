@@ -42,5 +42,5 @@ def simulation_005(filename):
 
 
 if __name__ == '__main__':
-    fmu = "D:/workspace/FMIDemo/fmiResources/Rectifier.fmu"
+    fmu = "D:/workspace/FMIDemo/resources/Rectifier.fmu"
     simulation_005(fmu)

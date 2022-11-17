@@ -5,7 +5,7 @@ from fmi.instance import FMI_Cs_instance
 
 
 def simulation_003():
-    filename = 'D:/workspace/FMIDemo/fmiResources/BouncingBall.fmu'
+    filename = 'D:/workspace/FMIDemo/resources/BouncingBall.fmu'
     unzip, md, fmu_instance = FMI_Cs_instance(filename)
     fmu_instance.reset()
     result = FMI_complex_simulation(filename=unzip,

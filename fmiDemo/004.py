@@ -9,7 +9,7 @@ from fmi.instance import FMI_unzip
 
 def simulate_004(show_plot=True):
 
-    fmu_filename = 'D:/workspace/FMIDemo/fmiResources/CoupledClutches.fmu'
+    fmu_filename = 'D:/workspace/FMIDemo/resources/CoupledClutches.fmu'
     start_time = 0.0
     threshold = 2.0
     stop_time = 2.0
