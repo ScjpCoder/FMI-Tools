@@ -55,7 +55,7 @@ def simulate_004(show_plot=True):
     result = np.array(rows, dtype=np.dtype([('time', np.float64), ('inputs', np.float64), ('outputs[4]', np.float64)]))
     if show_plot:
         FMI_polt_result(result)
-    return time
+    exit(0)
 
 
 if __name__ == '__main__':
