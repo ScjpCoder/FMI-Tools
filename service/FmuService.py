@@ -46,6 +46,7 @@ def simulation_oneStep(stop_time):
     time = 0.0
     stop = model_description.defaultExperiment.stopTime
     step = model_description.defaultExperiment.stepSize
+    stop_time = stop_time * step
     if step is None:
         step = model_description.defaultExperiment.tolerance
 
@@ -69,10 +70,11 @@ def afterSimu():
 
 
 if __name__ == '__main__':
-    url = "D:/workspace\\FMIDemo\\resources\\Ball.fmu"
-    beforeSimu(url)
     # 仿真数据的具体时刻
-    _time = 1.0
+    _time = 150
+    url = "D:/workspace\\FMIDemo\\resources\\tiaozhijietiao.fmu"
+
+    beforeSimu(url)
     data = simulation_oneStep(_time)
     afterSimu()
     # 数据可以写文件
